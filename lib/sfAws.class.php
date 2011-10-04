@@ -10,18 +10,18 @@
  */
 class sfAws {
   private $prefix = 'sfAmazon';
-  private $S3;
+  private $services = array();
   
   public function __call($name, $arguments) {
     if (substr($name, 0, 3) == 'get') {
       $var = substr($name, 3);
-      
-      if (!$this->$var) {
+
+      if (!isset($this->services[$var])) {
         $class = $this->prefix.$var;
-        $this->$var = new $class;
+        $this->services[$var] = new $class;
       }
-      
-      return $this->$var;
+
+      return $this->services[$var];
     }
   }
 }
