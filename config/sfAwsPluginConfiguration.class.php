@@ -99,5 +99,11 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
      * load `sdk.class.php` last to avoid clobbering any other autoloaders.
      */
     defined('AWS_ENABLE_EXTENSIONS') || define('AWS_ENABLE_EXTENSIONS', 'false');
+    
+    $this->dispatcher->connect('context.load_factories', array($this, 'configureAmazonS3'));
+  }
+
+  public function configureAmazonS3(sfEvent $event) {
+    $event->getSubject()->setS3(new AmazonS3);
   }
 }
