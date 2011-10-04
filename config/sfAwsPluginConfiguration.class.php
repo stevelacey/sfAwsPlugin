@@ -100,10 +100,10 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
      */
     defined('AWS_ENABLE_EXTENSIONS') || define('AWS_ENABLE_EXTENSIONS', 'false');
     
-    $this->dispatcher->connect('context.load_factories', array($this, 'configureAmazonS3'));
+    $this->dispatcher->connect('context.load_factories', array($this, 'configureAws'));
   }
 
-  public function configureAmazonS3(sfEvent $event) {
-    $event->getSubject()->setS3(new AmazonS3);
+  public function configureAws(sfEvent $event) {
+    $event->getSubject()->setAWS(new sfAws);
   }
 }
