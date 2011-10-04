@@ -17,7 +17,7 @@ class sfAmazonS3 {
   
   public function __call($name, $arguments) {
     /* rudementary, more methods accept bucket as first param, change to use reflection */
-    if (strstr($name, 'getObject')) {
+    if (strstr($name, 'createObject') || strstr($name, 'getObject')) {
       array_unshift($arguments, sfConfig::get('app_aws_bucket'));
     }
 
