@@ -1,12 +1,12 @@
 <?php
 
 /**
- * sfAmazonS3Plugin configuration.
+ * sfAwsPlugin configuration.
  * 
- * @package     sfAmazonS3Plugin
+ * @package     sfAwsPlugin
  * @subpackage  config
- * @author      Joshua Estes <Joshua.Estes@ScenicCityLabs.com>
- * @version     SVN: $Id: PluginConfiguration.class.php 17207 2009-04-10 15:36:26Z Kris.Wallsmith $
+ * @author      Steve Lacey <steve@stevelacey.net>
+ * @version     SVN: $Id$
  */
 class sfAwsPluginConfiguration extends sfPluginConfiguration {
   const VERSION = '1.0.0-DEV';

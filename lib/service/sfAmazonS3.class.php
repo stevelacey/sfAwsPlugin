@@ -3,8 +3,8 @@
 /**
  * sfAmazonS3 class
  * 
- * @package     plugins
- * @subpackage  sfAws
+ * @package     sfAwsPlugin
+ * @subpackage  service
  * @author      Steve Lacey <steve@stevelacey.net>
  * @version     SVN: $Id$
  */
