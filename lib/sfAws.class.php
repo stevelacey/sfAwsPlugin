@@ -9,7 +9,7 @@
  * @version     SVN: $Id$
  */
 class sfAws {
-  private $prefix = 'Amazon';
+  private $prefix = 'sfAmazon';
   private $S3;
   
   public function __call($name, $arguments) {
