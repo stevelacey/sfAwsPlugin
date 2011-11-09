@@ -10,13 +10,13 @@
  */
 class sfAmazonS3 {
   private $_S3;
-  private $_params;
   private $_bucket;
+  private $_acl;
   
   public function __construct($params) {
     $this->_S3     = new AmazonS3($params['access_key'], $params['secret_key']);
-    $this->_params = $params;
     $this->_bucket = $params['bucket'];
+    $this->_acl = $params['acl'];
   }
   
   public function __call($name, $arguments) {
@@ -29,7 +29,19 @@ class sfAmazonS3 {
         array_unshift($arguments, $this->_bucket);
       }
     }
-
     return call_user_func_array(array($this->_S3, $method), $arguments);
   }
+  
+  public function createObject($file, $opts) {
+    $default_opts = array( 'acl' => $this->_acl );
+    if (isset($opts['bucket'])) {
+      $bucket = $opts['bucket'];
+      unset($opts['bucket']);
+    } else {
+      $bucket = $this->_bucket;
+    } 
+    $opts = array_merge($default_opts, $opts);
+    return $this->_S3->create_object($bucket, $file, $opts);
+  }
+  
 }

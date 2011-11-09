@@ -116,8 +116,37 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
       'remote_ip'           => (php_sapi_name()=='cli') ? false : $request->getRemoteAddress(),
       'default_validity'    => sfConfig::get('app_aws_cfurl_default_validity'),
       'use_https'           => sfConfig::get('app_aws_cfurl_use_https'),
-      'distribution_domain' => sfConfig::get('app_aws_distribution_domain')
+      'distribution_domain' => sfConfig::get('app_aws_distribution_domain'),
+      'acl'                 => $this->getDefaultAcl(),
     );
     $context->setAWS(new sfAws($instance_params));
   }
+  
+  public function getDefaultAcl() {
+    return array(
+      array(
+        'id'         => sfConfig::get('app_aws_canonical_user_id'),
+        'permission' => AmazonS3::GRANT_READ
+      ),
+      array(
+        'id'         => sfConfig::get('app_aws_canonical_user_id'),
+        'permission' => AmazonS3::GRANT_WRITE
+      ),
+      array(
+        'id'         => sfConfig::get('app_aws_canonical_user_id'),
+        'permission' => AmazonS3::GRANT_READ_ACP
+      ),
+      array(
+        'id'         => sfConfig::get('app_aws_canonical_user_id'),
+        'permission' => AmazonS3::GRANT_WRITE_ACP
+      ),
+      array(
+        'id'         => sfConfig::get('app_aws_cloudfront_origin_access_identity_canonical_user'),
+        'permission' => AmazonS3::GRANT_READ
+      )
+
+    );
+  }
+  
+  
 }
