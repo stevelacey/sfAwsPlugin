@@ -44,4 +44,22 @@ class sfAmazonS3 {
     return $this->_S3->create_object($bucket, $file, $opts);
   }
   
+  public function validateAcl($file, $acl = false) {
+    if (!$acl) {
+      $acl = $this->_acl;
+    }
+    $current_acl = $this->getObjectAcl($file);
+    foreach ($current_acl->body->AccessControlList->Grant as $current_grant) {
+      $grantee = (string)$current_grant->Grantee->ID;
+      $perm = (string)$current_grant->Permission;
+      foreach ($acl as $key=>$value) {
+        if ($value['id'] == $grantee && $value['permission'] == $perm) {
+          unset($acl[$key]);
+        }
+      }
+    }
+    return empty($acl);
+  }
+  
+  
 }
