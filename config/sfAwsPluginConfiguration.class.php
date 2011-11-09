@@ -15,6 +15,9 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
    * @see sfPluginConfiguration
    */
   public function initialize() {
+    
+    if (!sfConfig::get('sf_environment', false)) return; # hold off running this until config is loaded
+    
     /**
      * Amazon Web Services Key. Found in the AWS Security Credentials. You can also pass this value as the first
      * parameter to a service constructor.
@@ -37,13 +40,13 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
      * Your CanonicalUser ID. Used for setting access control settings in AmazonS3. Found in the AWS Security
      * Credentials.
      */
-    defined('AWS_CANONICAL_ID') || define('AWS_CANONICAL_ID', '');
+    defined('AWS_CANONICAL_ID') || define('AWS_CANONICAL_ID', sfConfig::get('app_aws_canonical_user_id'));
 
     /**
      * Your CanonicalUser DisplayName. Used for setting access control settings in AmazonS3. Found in the AWS
      * Security Credentials (i.e. "Welcome, AWS_CANONICAL_NAME").
      */
-    defined('AWS_CANONICAL_NAME') || define('AWS_CANONICAL_NAME', '');
+    defined('AWS_CANONICAL_NAME') || define('AWS_CANONICAL_NAME', sfconfig::get('app_aws_canonical_user_name'));
 
     /**
      * Determines which Cerificate Authority file to use.
@@ -86,13 +89,13 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
      * Amazon CloudFront key-pair to use for signing private URLs. Found in the AWS Security Credentials. This
      * can be set programmatically with <AmazonCloudFront::set_keypair_id()>.
      */
-    defined('AWS_CLOUDFRONT_KEYPAIR_ID') || define('AWS_CLOUDFRONT_KEYPAIR_ID', '');
+    defined('AWS_CLOUDFRONT_KEYPAIR_ID') || define('AWS_CLOUDFRONT_KEYPAIR_ID', sfConfig::get('app_aws_cloudfront_private_key_id'));
 
     /**
      * The contents of the *.pem private key that matches with the CloudFront key-pair ID. Found in the AWS
      * Security Credentials. This can be set programmatically with <AmazonCloudFront::set_private_key()>.
      */
-    defined('AWS_CLOUDFRONT_PRIVATE_KEY_PEM') || define('AWS_CLOUDFRONT_PRIVATE_KEY_PEM', '');
+    defined('AWS_CLOUDFRONT_PRIVATE_KEY_PEM') || define('AWS_CLOUDFRONT_PRIVATE_KEY_PEM', sfConfig::get('app_aws_cloudfront_private_key_pem'));
 
     /**
      * Set the value to true to enable autoloading for classes not prefixed with "Amazon" or "CF". If enabled,
@@ -104,6 +107,17 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
   }
 
   public function configureAws(sfEvent $event) {
-    $event->getSubject()->setAWS(new sfAws);
+    $context = $event->getSubject();
+    $request = $context->getRequest();    
+    $instance_params = array(
+      'access_key'          => sfConfig::get('app_aws_access_key'),
+      'secret_key'          => sfConfig::get('app_aws_secret_key'),
+      'bucket'              => sfConfig::get('app_aws_bucket'),
+      'remote_ip'           => (php_sapi_name()=='cli') ? false : $request->getRemoteAddress(),
+      'default_validity'    => sfConfig::get('app_aws_cfurl_default_validity'),
+      'use_https'           => sfConfig::get('app_aws_cfurl_use_https'),
+      'distribution_domain' => sfConfig::get('app_aws_distribution_domain')
+    );
+    $context->setAWS(new sfAws($instance_params));
   }
 }

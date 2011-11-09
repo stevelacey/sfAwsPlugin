@@ -542,14 +542,14 @@ class AmazonCloudFront extends CFRuntime
 			$origin = $update->addChild('S3Origin');
 			$origin->addChild('DNSName', $xml->S3Origin->DNSName);
 
-			// origin access identity
+      // origin access identity
 			if (isset($opt['OriginAccessIdentity']))
 			{
-				$update->addChild('OriginAccessIdentity', 'origin-access-identity/cloudfront/' . $opt['OriginAccessIdentity']);
+				$origin->addChild('OriginAccessIdentity', 'origin-access-identity/cloudfront/' . $opt['OriginAccessIdentity']);
 			}
-			elseif (isset($xml->OriginAccessIdentity))
+			elseif (isset($xml->S3Origin->OriginAccessIdentity))
 			{
-				$update->addChild('OriginAccessIdentity', $xml->OriginAccessIdentity);
+				$origin->addChild('OriginAccessIdentity', $xml->S3Origin->OriginAccessIdentity);
 			}
 		}
 		elseif (isset($xml->CustomOrigin))
@@ -1326,6 +1326,7 @@ class AmazonCloudFront extends CFRuntime
 	 */
 	public function get_private_object_url($distribution_hostname, $filename, $expires, $opt = null)
 	{
+	  
 		if (!$this->key_pair_id || !$this->private_key)
 		{
 			throw new CloudFront_Exception('You must set both a Amazon CloudFront keypair ID and an RSA private key for that keypair before using ' . __FUNCTION__ . '()');
