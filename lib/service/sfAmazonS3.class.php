@@ -33,7 +33,13 @@ class sfAmazonS3 {
   }
   
   public function createObject($file, $opts) {
-    $default_opts = array( 'acl' => $this->_acl );
+    $default_opts = array( 'acl' => AmazonS3::ACL_PRIVATE );
+    if (isset($opts['array_acl'])) {
+      $acl = $opts['array_acl'];
+      unset($opts['array_acl']);
+    } else {
+      $acl = $this->_acl;
+    }
     if (isset($opts['bucket'])) {
       $bucket = $opts['bucket'];
       unset($opts['bucket']);
@@ -41,7 +47,11 @@ class sfAmazonS3 {
       $bucket = $this->_bucket;
     } 
     $opts = array_merge($default_opts, $opts);
-    return $this->_S3->create_object($bucket, $file, $opts);
+    $ret = $this->_S3->create_object($bucket, $file, $opts);
+    if ($ret->isOK()) {
+      $this->setObjectAcl($file, $acl);
+    }
+    return $ret;
   }
   
   public function validateAcl($file, $acl = false) {
