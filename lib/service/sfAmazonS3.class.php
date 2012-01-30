@@ -29,28 +29,34 @@ class sfAmazonS3 {
         array_unshift($arguments, $this->_bucket);
       }
     }
+    
     return call_user_func_array(array($this->_S3, $method), $arguments);
   }
   
   public function createObject($file, $opts) {
     $default_opts = array( 'acl' => AmazonS3::ACL_PRIVATE );
+    
     if (isset($opts['array_acl'])) {
       $acl = $opts['array_acl'];
       unset($opts['array_acl']);
     } else {
       $acl = $this->_acl;
     }
+    
     if (isset($opts['bucket'])) {
       $bucket = $opts['bucket'];
       unset($opts['bucket']);
     } else {
       $bucket = $this->_bucket;
-    } 
+    }
+    
     $opts = array_merge($default_opts, $opts);
     $ret = $this->_S3->create_object($bucket, $file, $opts);
+    
     if ($ret->isOK()) {
       $this->setObjectAcl($file, $acl);
     }
+    
     return $ret;
   }
   
@@ -58,7 +64,9 @@ class sfAmazonS3 {
     if (!$acl) {
       $acl = $this->_acl;
     }
+    
     $current_acl = $this->getObjectAcl($file);
+    
     foreach ($current_acl->body->AccessControlList->Grant as $current_grant) {
       $grantee = (string)$current_grant->Grantee->ID;
       $perm = (string)$current_grant->Permission;
@@ -68,8 +76,7 @@ class sfAmazonS3 {
         }
       }
     }
+    
     return empty($acl);
   }
-  
-  
 }

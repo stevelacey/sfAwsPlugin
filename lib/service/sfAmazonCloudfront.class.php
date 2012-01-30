@@ -35,24 +35,28 @@ class sfAmazonCloudfront {
         $expires = time() + $this->_default_validity;
       } 
     }
+    
     if (isset($opts['distribution_domain'])) {
       $domain = $opts['distribution_domain'];
       unset($opts['distribution_domain']);
     } else {
       $domain = $this->_domain;
     }
+    
     unset($opts['validity']);
+    
     $default_opts = array(
       'IPAddress' => $this->_remote_ip,
       'Secure' => $this->_https,
     );
+    
     $opts = array_merge($default_opts, $opts);
     
     // fix ip for local dev
     if (isset($opts['IPAddress']) && strpos($opts['IPAddress'], '192.168') !== false) {
       unset($opts['IPAddress']);
-    }    
+    }
+    
     return $this->_cloudfront->get_private_object_url($domain, $filename, $expires, $opts);
   }
-  
 }

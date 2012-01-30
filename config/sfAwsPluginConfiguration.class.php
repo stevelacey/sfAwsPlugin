@@ -9,7 +9,7 @@
  * @version     SVN: $Id$
  */
 class sfAwsPluginConfiguration extends sfPluginConfiguration {
-  const VERSION = '1.0.0-DEV';
+  const VERSION = '1.0.1-DEV';
 
   /**
    * @see sfPluginConfiguration
@@ -109,6 +109,7 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
   public function configureAws(sfEvent $event) {
     $context = $event->getSubject();
     $request = $context->getRequest();    
+    
     $instance_params = array(
       'access_key'          => sfConfig::get('app_aws_access_key'),
       'secret_key'          => sfConfig::get('app_aws_secret_key'),
@@ -119,6 +120,7 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
       'distribution_domain' => sfConfig::get('app_aws_distribution_domain'),
       'acl'                 => $this->getDefaultAcl(),
     );
+    
     $context->setAWS(new sfAws($instance_params));
   }
   
@@ -144,9 +146,6 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
         'id'         => sfConfig::get('app_aws_cloudfront_origin_access_identity_canonical_user'),
         'permission' => AmazonS3::GRANT_READ
       )
-
     );
   }
-  
-  
 }
