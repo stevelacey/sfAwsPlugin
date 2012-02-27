@@ -107,21 +107,16 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
   }
 
   public function configureAws(sfEvent $event) {
-    $context = $event->getSubject();
-    $request = $context->getRequest();    
-    
-    $instance_params = array(
+    $event->getSubject()->setAWS(new sfAws(array(
       'access_key'          => sfConfig::get('app_aws_access_key'),
       'secret_key'          => sfConfig::get('app_aws_secret_key'),
       'bucket'              => sfConfig::get('app_aws_bucket'),
-      'remote_ip'           => (php_sapi_name()=='cli') ? false : $request->getRemoteAddress(),
+      'remote_ip'           => php_sapi_name() == 'cli' ? false : $event->getSubject()->getRequest()->getRemoteAddress(),
       'default_validity'    => sfConfig::get('app_aws_cfurl_default_validity'),
       'use_https'           => sfConfig::get('app_aws_cfurl_use_https'),
       'distribution_domain' => sfConfig::get('app_aws_distribution_domain'),
       'acl'                 => $this->getDefaultAcl(),
-    );
-    
-    $context->setAWS(new sfAws($instance_params));
+    )));
   }
   
   public function getDefaultAcl() {

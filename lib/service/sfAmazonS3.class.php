@@ -33,31 +33,34 @@ class sfAmazonS3 {
     return call_user_func_array(array($this->_S3, $method), $arguments);
   }
   
-  public function createObject($file, $opts) {
-    $default_opts = array( 'acl' => AmazonS3::ACL_PRIVATE );
-    
-    if (isset($opts['array_acl'])) {
-      $acl = $opts['array_acl'];
-      unset($opts['array_acl']);
+  public function createObject($file, $options) {
+    if (array_key_exists('acl', $options)) {
+      if ($options['acl'] == AmazonS3::ACL_PRIVATE) {
+        $acl = $this->_acl;
+      } else {
+        $acl = $options['acl'];
+      }
+      
+      unset($options['acl']);
     } else {
-      $acl = $this->_acl;
+      $acl = AmazonS3::ACL_PUBLIC;
     }
     
-    if (isset($opts['bucket'])) {
-      $bucket = $opts['bucket'];
-      unset($opts['bucket']);
+    if (array_key_exists('bucket', $options)) {
+      $bucket = $options['bucket'];
+      
+      unset($options['bucket']);
     } else {
       $bucket = $this->_bucket;
     }
     
-    $opts = array_merge($default_opts, $opts);
-    $ret = $this->_S3->create_object($bucket, $file, $opts);
+    $response = $this->_S3->create_object($bucket, $file, $options);
     
-    if ($ret->isOK()) {
+    if ($response->isOK()) {
       $this->setObjectAcl($file, $acl);
     }
     
-    return $ret;
+    return $response;
   }
   
   public function validateAcl($file, $acl = false) {
@@ -67,11 +70,12 @@ class sfAmazonS3 {
     
     $current_acl = $this->getObjectAcl($file);
     
-    foreach ($current_acl->body->AccessControlList->Grant as $current_grant) {
-      $grantee = (string)$current_grant->Grantee->ID;
-      $perm = (string)$current_grant->Permission;
-      foreach ($acl as $key=>$value) {
-        if ($value['id'] == $grantee && $value['permission'] == $perm) {
+    foreach ($current_acl->body->AccessControlList->Grant as $grant) {
+      $grantee = (string) $grant->Grantee->ID;
+      $permission = (string) $grant->Permission;
+      
+      foreach ($acl as $key => $value) {
+        if ($value['id'] == $grantee && $value['permission'] == $permission) {
           unset($acl[$key]);
         }
       }
