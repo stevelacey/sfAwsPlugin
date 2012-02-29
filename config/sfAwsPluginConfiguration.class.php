@@ -114,7 +114,7 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
       'remote_ip'           => php_sapi_name() == 'cli' ? false : $event->getSubject()->getRequest()->getRemoteAddress(),
       'default_validity'    => sfConfig::get('app_aws_cfurl_default_validity'),
       'use_https'           => sfConfig::get('app_aws_cfurl_use_https'),
-      'distribution_domain' => sfConfig::get('app_aws_distribution_domain'),
+      'distribution_domain' => sfConfig::get('app_aws_distribution_subdomain') ? sfConfig::get('app_aws_distribution_subdomain').'.'.$event->getSubject()->getRequest()->getHost() : sfConfig::get('app_aws_distribution_domain'),
       'acl'                 => $this->getDefaultAcl(),
     )));
   }
