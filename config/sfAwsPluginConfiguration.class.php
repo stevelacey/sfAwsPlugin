@@ -2,7 +2,7 @@
 
 /**
  * sfAwsPlugin configuration.
- * 
+ *
  * @package     sfAwsPlugin
  * @subpackage  config
  * @author      Steve Lacey <steve@stevelacey.net>
@@ -15,9 +15,9 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
    * @see sfPluginConfiguration
    */
   public function initialize() {
-    
+
     if (!sfConfig::get('sf_environment', false)) return; # hold off running this until config is loaded
-    
+
     /**
      * Amazon Web Services Key. Found in the AWS Security Credentials. You can also pass this value as the first
      * parameter to a service constructor.
@@ -102,7 +102,7 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
      * load `sdk.class.php` last to avoid clobbering any other autoloaders.
      */
     defined('AWS_ENABLE_EXTENSIONS') || define('AWS_ENABLE_EXTENSIONS', 'false');
-    
+
     $this->dispatcher->connect('context.load_factories', array($this, 'configureAws'));
   }
 
@@ -114,11 +114,12 @@ class sfAwsPluginConfiguration extends sfPluginConfiguration {
       'remote_ip'           => php_sapi_name() == 'cli' ? false : $event->getSubject()->getRequest()->getRemoteAddress(),
       'default_validity'    => sfConfig::get('app_aws_cfurl_default_validity'),
       'use_https'           => sfConfig::get('app_aws_cfurl_use_https'),
+      'distribution_id'     => sfConfig::get('app_aws_distribution_id'),
       'distribution_domain' => sfConfig::get('app_aws_distribution_subdomain') ? sfConfig::get('app_aws_distribution_subdomain').'.'.str_replace('www.', '', $event->getSubject()->getRequest()->getHost()) : sfConfig::get('app_aws_distribution_domain'),
       'acl'                 => $this->getDefaultAcl(),
     )));
   }
-  
+
   public function getDefaultAcl() {
     return array(
       array(

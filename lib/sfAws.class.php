@@ -2,22 +2,21 @@
 
 /**
  * sfAws main class
- * 
+ *
  * @package     sfAwsPlugin
  * @subpackage lib
  * @author      Steve Lacey <steve@stevelacey.net>
  * @version     SVN: $Id$
  */
 class sfAws {
-  private $_prefix         = 'sfAmazon';
-  private $_services       = array();
+  private $_prefix = 'sfAmazon';
+  private $_services = array();
   private $_service_params;
 
-  
   public function __construct($service_params = array()) {
     $this->_service_params = $service_params;
   }
-  
+
   public function __call($name, $arguments) {
     if (substr($name, 0, 3) == 'get') {
       $var = substr($name, 3);
