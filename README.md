@@ -6,6 +6,8 @@ All functionality from the SDK should be available via magic methods on the sf c
 
 With regards to S3 and CloudFront, the plugin loosely follows the convention that you will probably have 1 bucket and 1 distribution per environment.
 
+Also provided is s3ValidatorFile which extends sfValidatorFile, allowing easy file uploads from forms, note that the uploads are still sent through to the local uploads directory, watch out for this if short on disk space or using private storage.
+
 If you're finding the overloads at all restrictive or want to wrap more of the AWS services, feel free to do so and submit a pull request, all that I ask is that backwards compatibility is maintained wherever possible.
 
 ## Example config
@@ -40,7 +42,34 @@ If you're finding the overloads at all restrictive or want to wrap more of the A
 
     $aws = sfContext::getInstance()->getAWS();
 
+    $s3 = $aws->getS3();
+
+    $response = $s3->createObject($file, array(
+      'fileUpload' => ...,
+      'contentType' => ...,
+      'acl' => AmazonS3::ACL_PRIVATE
+    ));
+
     $cloudfront = $aws->getCloudfront();
 
-    $cloudfront->getPrivateObjectUrl(...);
-    $cloudfront->createInvalidation($paths);
+    $response = $cloudfront->getPrivateObjectUrl(...);
+    $response = $cloudfront->createInvalidation($paths);
+
+
+## Amazon S3 Form validators
+
+    $this->setValidator('mp4', new s3ValidatorFile(
+      array(
+        'mime_types' => array('video/mp4'),
+        'path' => 'video',
+        'required' => $this->isNew()
+      )
+    ));
+
+    $this->setValidator('webm', new s3ValidatorFile(
+      array(
+        'mime_types' => array('video/webm'),
+        'path' => 'video',
+        'required' => $this->isNew()
+      )
+    ));
